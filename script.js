@@ -6,6 +6,8 @@
 
   const CANVAS_WIDTH = 480;
   const CANVAS_HEIGHT = 600;
+  const GRAVITY = 0.45;
+  const JUMP_FORCE = -12;
   const MOVE_SPEED = 5;
   const PLATFORM_HEIGHT = 14;
   const PLAYER_WIDTH = 36;
@@ -18,18 +20,21 @@
     height: PLATFORM_HEIGHT,
   };
 
-  const player = {
-    x: (CANVAS_WIDTH - PLAYER_WIDTH) / 2,
-    y: platform.y - PLAYER_HEIGHT - 2,
-    vx: 0,
-    width: PLAYER_WIDTH,
-    height: PLAYER_HEIGHT,
-  };
+  let player = null;
+  let gameRunning = true;
+  const keys = { left: false, right: false };
 
-  const keys = {
-    left: false,
-    right: false,
-  };
+  function resetPlayer() {
+    player = {
+      x: (CANVAS_WIDTH - PLAYER_WIDTH) / 2,
+      y: platform.y - PLAYER_HEIGHT - 2,
+      vx: 0,
+      vy: JUMP_FORCE,
+      width: PLAYER_WIDTH,
+      height: PLAYER_HEIGHT,
+    };
+    gameRunning = true;
+  }
 
   function drawPlatform() {
     ctx.fillStyle = "#6bcb77";
@@ -63,7 +68,6 @@
     ctx.arc(player.x + 12, player.y + 14, 3, 0, Math.PI * 2);
     ctx.arc(player.x + player.width - 12, player.y + 14, 3, 0, Math.PI * 2);
     ctx.fill();
-
     ctx.restore();
   }
 
@@ -74,13 +78,50 @@
 
     player.x += player.vx;
     player.x = Math.max(0, Math.min(CANVAS_WIDTH - player.width, player.x));
+
+    const oldBottom = player.y + player.height;
+    player.vy += GRAVITY;
+    player.y += player.vy;
+    const newBottom = player.y + player.height;
+
+    const overlapX =
+      player.x + player.width > platform.x &&
+      player.x < platform.x + platform.width;
+
+    if (
+      overlapX &&
+      oldBottom <= platform.y &&
+      newBottom >= platform.y &&
+      player.vy >= 0
+    ) {
+      player.y = platform.y - player.height;
+      player.vy = JUMP_FORCE;
+    }
+
+    if (player.y > CANVAS_HEIGHT + 40) {
+      gameRunning = false;
+    }
+  }
+
+  function drawGameOver() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.fillStyle = "#fff";
+    ctx.font = '32px "Fredoka One"';
+    ctx.textAlign = "center";
+    ctx.fillText("Game Over", CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+    ctx.font = '16px "Nunito"';
+    ctx.fillText("Press Enter to restart", CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 36);
   }
 
   function gameLoop() {
-    updatePlayer();
+    if (gameRunning) updatePlayer();
+
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     drawPlatform();
     drawPlayer();
+    if (!gameRunning) drawGameOver();
+
     requestAnimationFrame(gameLoop);
   }
 
@@ -91,6 +132,7 @@
     if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
       keys.right = true;
     }
+    if (event.key === "Enter" && !gameRunning) resetPlayer();
   });
 
   document.addEventListener("keyup", function (event) {
@@ -102,5 +144,6 @@
     }
   });
 
+  resetPlayer();
   gameLoop();
 })();
