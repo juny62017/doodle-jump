@@ -4,6 +4,7 @@
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
   const scoreEl = document.getElementById("scoreEl");
+  const highScoreEl = document.getElementById("highScoreEl");
 
   const CANVAS_WIDTH = 480;
   const CANVAS_HEIGHT = 600;
@@ -24,6 +25,7 @@
   let cameraY = 0;
   let startCameraY = 0;
   let score = 0;
+  let highScore = parseInt(localStorage.getItem("doodle-high-score") || "0", 10);
   let gameRunning = true;
   const keys = { left: false, right: false };
 
@@ -44,7 +46,6 @@
       const width =
         PLATFORM_MIN_WIDTH + Math.random() * (PLATFORM_MAX_WIDTH - PLATFORM_MIN_WIDTH);
       let x = Math.random() * (CANVAS_WIDTH - width);
-
       if (i === 0) x = (CANVAS_WIDTH - width) / 2;
 
       platforms.push(createPlatform(x, y, width));
@@ -52,10 +53,23 @@
     }
   }
 
+  function addPlatformsAbove(topY) {
+    let lastY = platforms.length ? Math.min(...platforms.map((platform) => platform.y)) : topY;
+
+    while (lastY > topY - CANVAS_HEIGHT - 200) {
+      lastY -= PLATFORM_GAP_MIN + Math.random() * (PLATFORM_GAP_MAX - PLATFORM_GAP_MIN);
+      const width =
+        PLATFORM_MIN_WIDTH + Math.random() * (PLATFORM_MAX_WIDTH - PLATFORM_MIN_WIDTH);
+      const x = Math.random() * (CANVAS_WIDTH - width);
+      platforms.push(createPlatform(x, lastY, width));
+    }
+  }
+
   function resetGame() {
     cameraY = 0;
     score = 0;
     scoreEl.textContent = "0";
+    highScoreEl.textContent = highScore;
     keys.left = false;
     keys.right = false;
     initPlatforms();
@@ -121,11 +135,18 @@
 
     player.x += player.vx;
     player.x = Math.max(0, Math.min(CANVAS_WIDTH - player.width, player.x));
-
     player.vy += GRAVITY;
     player.y += player.vy;
 
-    for (const platform of platforms) {
+    for (let i = platforms.length - 1; i >= 0; i--) {
+      const platform = platforms[i];
+      const screenY = platform.y - cameraY;
+
+      if (screenY > CANVAS_HEIGHT + 100) {
+        platforms.splice(i, 1);
+        continue;
+      }
+
       const playerBottom = player.y + player.height;
       const overlapX =
         player.x + player.width > platform.x &&
@@ -145,8 +166,20 @@
     const targetCameraY = player.y - CANVAS_HEIGHT * CAMERA_LEAD;
     if (targetCameraY < cameraY) {
       cameraY = targetCameraY;
-      score = Math.max(0, Math.floor((startCameraY - cameraY) / 8));
-      scoreEl.textContent = score;
+      const newScore = Math.max(0, Math.floor((startCameraY - cameraY) / 8));
+
+      if (newScore > score) {
+        score = newScore;
+        scoreEl.textContent = score;
+
+        if (score > highScore) {
+          highScore = score;
+          highScoreEl.textContent = highScore;
+          localStorage.setItem("doodle-high-score", String(highScore));
+        }
+      }
+
+      addPlatformsAbove(cameraY);
     }
 
     if (player.y - cameraY > CANVAS_HEIGHT + 50) gameRunning = false;
@@ -193,6 +226,7 @@
     }
   });
 
+  highScoreEl.textContent = highScore;
   resetGame();
   gameLoop();
 })();
