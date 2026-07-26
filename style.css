@@ -28,9 +28,10 @@ body {
 #gameCanvas {
   display: block;
   width: 100%;
-  height: auto;
   aspect-ratio: 480 / 600;
+  height: auto;
   background: linear-gradient(180deg, #87ceeb 0%, #e0f6ff 40%, #98d8aa 70%, #7bc67e 100%);
+  cursor: pointer;
 }
 
 .game-ui {
@@ -38,7 +39,6 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1;
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -65,5 +65,86 @@ body {
 }
 
 .high-score-value {
+  color: #ffd93d;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 24px;
+  text-align: center;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-start h1 {
+  font-family: "Fredoka One", cursive;
+  font-size: 2.5rem;
+  color: #fff;
+  margin: 0 0 16px;
+  text-shadow: 0 4px 0 #6bcb77, 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.overlay-start p {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.overlay-start kbd {
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9em;
+}
+
+.btn-start {
+  margin-top: 24px;
+  padding: 14px 40px;
+  font-family: "Fredoka One", cursive;
+  font-size: 1.25rem;
+  color: #1a1a2e;
+  background: linear-gradient(180deg, #6bcb77 0%, #4ade80 100%);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #2d8a3e, 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #2d8a3e, 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.btn-start:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 #2d8a3e, 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.overlay-gameover h2 {
+  font-family: "Fredoka One", cursive;
+  font-size: 2rem;
+  color: #ff6b6b;
+  margin: 0 0 8px;
+}
+
+.overlay-gameover p {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.1rem;
+  margin: 8px 0;
+}
+
+.overlay-gameover #finalScoreEl {
+  font-family: "Fredoka One", cursive;
   color: #ffd93d;
 }

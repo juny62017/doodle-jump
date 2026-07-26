@@ -5,6 +5,11 @@
   const ctx = canvas.getContext("2d");
   const scoreEl = document.getElementById("scoreEl");
   const highScoreEl = document.getElementById("highScoreEl");
+  const startOverlay = document.getElementById("startOverlay");
+  const gameOverOverlay = document.getElementById("gameOverOverlay");
+  const startBtn = document.getElementById("startBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const finalScoreEl = document.getElementById("finalScoreEl");
 
   const CANVAS_WIDTH = 480;
   const CANVAS_HEIGHT = 600;
@@ -101,7 +106,7 @@
     highScoreEl.textContent = highScore;
   }
 
-  function drawPlayer() {
+  function drawPlayer(screenY) {
     const x = player.x;
     const y = player.y - cameraY;
     if (y < -PLAYER_HEIGHT - 20 || y > CANVAS_HEIGHT + 20) return;
@@ -157,20 +162,11 @@
     ctx.stroke();
   }
 
-  function drawGameOver() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    ctx.fillStyle = "#fff";
-    ctx.font = '32px "Fredoka One"';
-    ctx.textAlign = "center";
-    ctx.fillText("Game Over", CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
-    ctx.font = '16px "Nunito"';
-    ctx.fillText("Press Enter to play again", CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 36);
-  }
-
   function gameOver() {
     gameRunning = false;
-    drawGameOver();
+    if (animationId) cancelAnimationFrame(animationId);
+    finalScoreEl.textContent = score;
+    gameOverOverlay.classList.remove("hidden");
   }
 
   function gameLoop() {
@@ -246,15 +242,18 @@
   }
 
   function startGame() {
-    if (animationId) cancelAnimationFrame(animationId);
+    startOverlay.classList.add("hidden");
+    gameOverOverlay.classList.add("hidden");
     resetGame();
     gameLoop();
   }
 
+  startBtn.addEventListener("click", startGame);
+  restartBtn.addEventListener("click", startGame);
+
   document.addEventListener("keydown", function (e) {
     if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = true;
     if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = true;
-    if (e.key === "Enter" && !gameRunning) startGame();
     if (e.key === " ") e.preventDefault();
   });
 
@@ -263,6 +262,10 @@
     if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
   });
 
+  canvas.addEventListener("click", function () {
+    if (gameRunning) return;
+    if (!startOverlay.classList.contains("hidden")) startGame();
+  });
+
   highScoreEl.textContent = highScore;
-  startGame();
 })();

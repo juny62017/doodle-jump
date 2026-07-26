@@ -3,13 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Doodle Jump</title>
+    <title> Doodle Jump</title>
     <link rel="icon" href="https://cdn.hackclub.com/019f99c4-31b2-7805-932e-a81c8fe69654/dddd.png" />
     <link rel="stylesheet" href="style.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;800&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div class="game-wrapper">
@@ -20,6 +17,17 @@
         <span id="highScoreEl" class="high-score-value">0</span>
       </div>
       <canvas id="gameCanvas" width="480" height="600"></canvas>
+      <div id="startOverlay" class="overlay overlay-start">
+        <h1>Doodle Jump</h1>
+        <p>Use <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> to move</p>
+        <p>Land on platforms to jump higher!</p>
+        <button type="button" id="startBtn" class="btn-start">Play</button>
+      </div>
+      <div id="gameOverOverlay" class="overlay overlay-gameover hidden">
+        <h2>Game Over</h2>
+        <p>Score: <span id="finalScoreEl">0</span></p>
+        <button type="button" id="restartBtn" class="btn-start">Play Again</button>
+      </div>
     </div>
     <script src="script.js"></script>
   </body>
