@@ -6,6 +6,13 @@ The player automatically jumps from platform to platform.
 Your goal is to keep moving upward without falling off the screen. 
 Some platforms move..... while others break after you land on them.
 
+## theme
+
+It is an endless game
+because the doodle always jumpp towards the sky and theres no end level
+ONLY JUMP AND JUMP 
+
+
 ## Features
 
 * Automatic jumping ( still u need to work with keys)
