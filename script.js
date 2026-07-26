@@ -3,6 +3,21 @@
 
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
+  if (!ctx.roundRect) {
+    ctx.roundRect = function (x, y, w, h, r) {
+      r = Math.min(r, w / 2, h / 2);
+      this.beginPath();
+      this.moveTo(x + r, y);
+      this.lineTo(x + w - r, y);
+      this.quadraticCurveTo(x + w, y, x + w, y + r);
+      this.lineTo(x + w, y + h - r);
+      this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      this.lineTo(x + r, y + h);
+      this.quadraticCurveTo(x, y + h, x, y + h - r);
+      this.lineTo(x, y + r);
+      this.quadraticCurveTo(x, y, x + r, y);
+    };
+  }
   const scoreEl = document.getElementById("scoreEl");
   const highScoreEl = document.getElementById("highScoreEl");
   const startOverlay = document.getElementById("startOverlay");
@@ -10,6 +25,8 @@
   const startBtn = document.getElementById("startBtn");
   const restartBtn = document.getElementById("restartBtn");
   const finalScoreEl = document.getElementById("finalScoreEl");
+  const btnLeft = document.getElementById("btnLeft");
+  const btnRight = document.getElementById("btnRight");
 
   const CANVAS_WIDTH = 480;
   const CANVAS_HEIGHT = 600;
@@ -35,6 +52,16 @@
   let gameRunning = false;
   let keys = { left: false, right: false };
   let time = 0;
+
+  function setPixelRatio() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = CANVAS_WIDTH * dpr;
+    canvas.height = CANVAS_HEIGHT * dpr;
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
+    ctx.scale(dpr, dpr);
+  }
 
   function createPlatform(x, y, width, type) {
     return {
@@ -90,6 +117,8 @@
     time = 0;
     keys.left = false;
     keys.right = false;
+    if (btnLeft) btnLeft.classList.remove("active");
+    if (btnRight) btnRight.classList.remove("active");
     initPlatforms();
     const firstPlatform = platforms[0];
     player = {
@@ -262,10 +291,37 @@
     if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
   });
 
+  function setKeyLeft(value) {
+    keys.left = value;
+    if (btnLeft) btnLeft.classList.toggle("active", value);
+  }
+  function setKeyRight(value) {
+    keys.right = value;
+    if (btnRight) btnRight.classList.toggle("active", value);
+  }
+  if (btnLeft) {
+    btnLeft.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      setKeyLeft(true);
+    });
+    btnLeft.addEventListener("pointerup", function () { setKeyLeft(false); });
+    btnLeft.addEventListener("pointerleave", function () { setKeyLeft(false); });
+  }
+  if (btnRight) {
+    btnRight.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      setKeyRight(true);
+    });
+    btnRight.addEventListener("pointerup", function () { setKeyRight(false); });
+    btnRight.addEventListener("pointerleave", function () { setKeyRight(false); });
+  }
+
   canvas.addEventListener("click", function () {
     if (gameRunning) return;
     if (!startOverlay.classList.contains("hidden")) startGame();
   });
 
+  window.addEventListener("resize", setPixelRatio);
+  setPixelRatio();
   highScoreEl.textContent = highScore;
 })();

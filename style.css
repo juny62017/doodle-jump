@@ -29,9 +29,11 @@ body {
   display: block;
   width: 100%;
   aspect-ratio: 480 / 600;
+  max-height: 70vh;
   height: auto;
   background: linear-gradient(180deg, #87ceeb 0%, #e0f6ff 40%, #98d8aa 70%, #7bc67e 100%);
   cursor: pointer;
+  touch-action: none;
 }
 
 .game-ui {
@@ -147,4 +149,52 @@ body {
 .overlay-gameover #finalScoreEl {
   font-family: "Fredoka One", cursive;
   color: #ffd93d;
+}
+
+/* Mobile control buttons */
+.mobile-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.mobile-controls .ctrl-btn {
+  pointer-events: auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: transform 0.1s, background 0.1s;
+}
+
+.mobile-controls .ctrl-btn:active,
+.mobile-controls .ctrl-btn.active {
+  background: rgba(107, 203, 119, 0.8);
+  transform: scale(0.95);
+}
+
+@media (hover: hover) {
+  .mobile-controls .ctrl-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+  }
+}
+
+.overlay-start .mobile-hint {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
 }
